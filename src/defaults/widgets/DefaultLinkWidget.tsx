@@ -22,12 +22,14 @@ export interface DefaultLinkState {
 	selected: boolean;
 }
 
-export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkState> {
+export class DefaultLinkWidget extends BaseWidget<
+	DefaultLinkProps,
+	DefaultLinkState
+> {
 	public static defaultProps: DefaultLinkProps = {
 		color: "black",
 		width: 3,
 		link: null,
-		engine: null,
 		smooth: false,
 		diagramEngine: null
 	};
@@ -60,13 +62,17 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 
 	componentDidUpdate() {
 		if (this.props.link.labels.length > 0) {
-			window.requestAnimationFrame(this.calculateAllLabelPosition.bind(this));
+			window.requestAnimationFrame(
+				this.calculateAllLabelPosition.bind(this)
+			);
 		}
 	}
 
 	componentDidMount() {
 		if (this.props.link.labels.length > 0) {
-			window.requestAnimationFrame(this.calculateAllLabelPosition.bind(this));
+			window.requestAnimationFrame(
+				this.calculateAllLabelPosition.bind(this)
+			);
 		}
 	}
 
@@ -74,9 +80,13 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 		if (
 			!event.shiftKey &&
 			!this.props.diagramEngine.isModelLocked(this.props.link) &&
-			this.props.link.points.length - 1 <= this.props.diagramEngine.getMaxNumberPointsPerLink()
+			this.props.link.points.length - 1 <=
+				this.props.diagramEngine.getMaxNumberPointsPerLink()
 		) {
-			const point = new PointModel(this.props.link, this.props.diagramEngine.getRelativeMousePoint(event));
+			const point = new PointModel(
+				this.props.link,
+				this.props.diagramEngine.getRelativeMousePoint(event)
+			);
 			point.setSelected(true);
 			this.forceUpdate();
 			this.props.link.addPoint(point, index);
@@ -97,7 +107,9 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 					className={
 						"point " +
 						this.bem("__point") +
-						(this.props.link.points[pointIndex].isSelected() ? this.bem("--point-selected") : "")
+						(this.props.link.points[pointIndex].isSelected()
+							? this.bem("--point-selected")
+							: "")
 					}
 				/>
 				<circle
@@ -137,11 +149,17 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 		);
 	}
 
-	generateLink(path: string, extraProps: any, id: string | number): JSX.Element {
+	generateLink(
+		path: string,
+		extraProps: any,
+		id: string | number
+	): JSX.Element {
 		var props = this.props;
 
 		var Bottom = React.cloneElement(
-			(props.diagramEngine.getFactoryForLink(this.props.link) as DefaultLinkFactory).generateLinkSegment(
+			(props.diagramEngine.getFactoryForLink(
+				this.props.link
+			) as DefaultLinkFactory).generateLinkSegment(
 				this.props.link,
 				this,
 				this.state.selected || this.props.link.isSelected(),
@@ -193,16 +211,22 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 		return [];
 	};
 
-	findPathAndRelativePositionToRenderLabel = (index: number): { path: any; position: number } => {
+	findPathAndRelativePositionToRenderLabel = (
+		index: number
+	): { path: any; position: number } => {
 		// an array to hold all path lengths, making sure we hit the DOM only once to fetch this information
 		const lengths =
-			this.refPaths[0].childNodes.length > 0 && this.refPaths[0].nodeName === "g"
+			this.refPaths[0].childNodes.length > 0 &&
+			this.refPaths[0].nodeName === "g"
 				? this.calculateAdvancedLinkDistance()
 				: this.refPaths.map(path => path.getTotalLength());
 
 		// calculate the point where we want to display the label
 		let labelPosition =
-			lengths.reduce((previousValue, currentValue) => previousValue + currentValue, 0) *
+			lengths.reduce(
+				(previousValue, currentValue) => previousValue + currentValue,
+				0
+			) *
 			(index / (this.props.link.labels.length + 1));
 
 		// find the path where the label will be rendered and calculate the relative position
@@ -226,12 +250,16 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 		if (link && link.sourcePort && link.targetPort) {
 			let x =
 				link.sourcePort.x > link.targetPort.x
-					? link.sourcePort.x - (link.sourcePort.x - link.targetPort.x) / 2
-					: link.targetPort.x - (link.targetPort.x - link.sourcePort.x) / 2;
+					? link.sourcePort.x -
+					  (link.sourcePort.x - link.targetPort.x) / 2
+					: link.targetPort.x -
+					  (link.targetPort.x - link.sourcePort.x) / 2;
 			let y =
 				link.sourcePort.y > link.targetPort.y
-					? link.sourcePort.y - (link.sourcePort.y - link.targetPort.y) / 2
-					: link.targetPort.y - (link.targetPort.y - link.sourcePort.y) / 2;
+					? link.sourcePort.y -
+					  (link.sourcePort.y - link.targetPort.y) / 2
+					: link.targetPort.y -
+					  (link.targetPort.y - link.sourcePort.y) / 2;
 			return { x, y };
 		}
 		return { x: 0, y: 0 };
@@ -243,7 +271,10 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 			return;
 		}
 
-		const { path, position } = this.findPathAndRelativePositionToRenderLabel(index);
+		const {
+			path,
+			position
+		} = this.findPathAndRelativePositionToRenderLabel(index);
 
 		const labelDimensions = {
 			width: this.refLabels[label.id].offsetWidth,
@@ -301,12 +332,18 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 
 		if (this.isSmartRoutingApplicable()) {
 			// first step: calculate a direct path between the points being linked
-			const directPathCoords = this.pathFinding.calculateDirectPath(_.first(points), _.last(points));
+			const directPathCoords = this.pathFinding.calculateDirectPath(
+				_.first(points),
+				_.last(points)
+			);
 
 			const routingMatrix = diagramEngine.getRoutingMatrix();
 			// now we need to extract, from the routing matrix, the very first walkable points
 			// so they can be used as origin and destination of the link to be created
-			const smartLink = this.pathFinding.calculateLinkStartEndCoords(routingMatrix, directPathCoords);
+			const smartLink = this.pathFinding.calculateLinkStartEndCoords(
+				routingMatrix,
+				directPathCoords
+			);
 
 			if (smartLink) {
 				const { start, end, pathToStart, pathToEnd } = smartLink;
@@ -339,7 +376,9 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 		// See @link{#isSmartRoutingApplicable()}.
 		if (paths.length === 0) {
 			if (points.length === 2) {
-				var isHorizontal = Math.abs(points[0].x - points[1].x) > Math.abs(points[0].y - points[1].y);
+				var isHorizontal =
+					Math.abs(points[0].x - points[1].x) >
+					Math.abs(points[0].y - points[1].y);
 				var xOrY = isHorizontal ? "x" : "y";
 
 				//draw the smoothing
@@ -363,7 +402,11 @@ export class DefaultLinkWidget extends BaseWidget<DefaultLinkProps, DefaultLinkS
 
 				paths.push(
 					this.generateLink(
-						Toolkit.generateCurvePath(pointLeft, pointRight, this.props.link.curvyness),
+						Toolkit.generateCurvePath(
+							pointLeft,
+							pointRight,
+							this.props.link.curvyness
+						),
 						{
 							onMouseDown: event => {
 								this.addPointToLink(event, 1);

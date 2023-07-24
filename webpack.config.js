@@ -1,5 +1,5 @@
 const webpack = require("webpack");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 var path = require("path");
 var plugins = [];
 const production = process.env.NODE_ENV === "production";
@@ -67,16 +67,7 @@ module.exports =
 		devtool: production ? "source-map" : "cheap-module-source-map",
 		mode: production ? "production" : "development",
 		optimization: {
-			minimizer: [
-				// we specify a custom UglifyJsPlugin here to get source maps in production
-				new UglifyJsPlugin({
-					uglifyOptions: {
-						compress: false,
-						ecma: 5,
-						mangle: false
-					},
-					sourceMap: true
-				})
-			]
+			minimize: true,
+			minimizer: [new TerserPlugin()]
 		}
 	};

@@ -2,7 +2,6 @@
 	"compileOnSave": false,
 	"name": "storm-react-diagrams",
 	"compilerOptions": {
-		"suppressExcessPropertyErrors": true,
 		"declaration": true,
 		"outDir": "@types",
 		"target": "es5",
